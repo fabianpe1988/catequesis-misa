@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La Santa Misa y la Eucaristía</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700;800&display=swap">
+<style>
+/* Diapositivas a pantalla completa: cielo azul mariano, oro litúrgico, pergamino */
+:root{
+  --cielo:#1f4e8c; --cielo2:#2f6fbf; --noche:#14315a;
+  --oro:#f2b632; --oro2:#ffe08a; --perg:#fff8ea; --tinta:#2b2340;
+  --rojo:#c0392b; --verde:#3f9b5a; --suave:#e9eefb;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:var(--body);background:var(--noche);color:var(--tinta);overflow:hidden}
+.deck{position:relative;height:100%;width:100%}
+.slide{position:absolute;inset:0;padding:clamp(16px,3vw,40px) clamp(16px,4vw,56px) 84px;display:flex;flex-direction:column;gap:clamp(10px,1.6vw,20px);
+  background:radial-gradient(circle at 85% 10%,rgba(255,224,138,.35),transparent 40%),linear-gradient(160deg,var(--cielo2),var(--cielo) 55%,var(--noche));
+  color:#fff;opacity:0;visibility:hidden;transform:translateX(30px);transition:opacity .45s,transform .45s,visibility .45s;overflow-y:auto}
+.slide.on{opacity:1;visibility:visible;transform:none}
+.slide.parte2{background:radial-gradient(circle at 15% 12%,rgba(255,224,138,.45),transparent 42%),linear-gradient(160deg,#8a4f1c,#5b2e6e 60%,#2e1a47)}
+.tag{display:inline-block;align-self:flex-start;background:var(--oro);color:var(--tinta);font-weight:800;font-size:clamp(12px,1.2vw,16px);letter-spacing:.06em;text-transform:uppercase;padding:4px 14px;border-radius:999px}
+h1,h2{font-family:var(--display);margin:0;line-height:1.05;text-wrap:balance}
+h1{font-size:clamp(34px,5.6vw,78px);color:var(--oro2);text-shadow:0 3px 0 rgba(0,0,0,.25)}
+h2{font-size:clamp(26px,3.6vw,52px);color:var(--oro2)}
+p{margin:0;font-size:clamp(16px,1.6vw,22px);line-height:1.45}
+.grid2{display:grid;grid-template-columns:1.15fr 1fr;gap:clamp(14px,2.5vw,36px);flex:1;min-height:0;align-items:center}
+.grid2>*{min-width:0}
+@media (max-width:820px){.grid2{grid-template-columns:1fr}}
+.video{position:relative;width:100%;aspect-ratio:16/9;max-width:100%;border-radius:16px;overflow:hidden;background:#000;border:4px solid var(--oro);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.video .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+.ylink{display:inline-flex;gap:8px;align-items:center;margin-top:8px;color:var(--oro2);font-weight:800;font-size:15px}
+.ylink:focus-visible,button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.panel{background:var(--perg);color:var(--tinta);border-radius:20px;padding:clamp(14px,2vw,26px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+button{font-family:var(--body);cursor:pointer}
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chip{border:0;border-radius:16px;padding:14px;background:var(--suave);color:var(--tinta);text-align:left;font-size:clamp(15px,1.4vw,19px);font-weight:800;transition:transform .2s,background .2s;min-height:84px}
+.chip small{display:block;font-weight:400;margin-top:6px;opacity:0;max-height:0;transition:opacity .3s}
+.chip.open{background:var(--oro2)}
+.chip.open small{opacity:1;max-height:200px}
+.chip:hover{transform:translateY(-3px)}
+.steps{display:flex;flex-direction:column;gap:10px}
+.step{display:flex;gap:14px;align-items:flex-start;border:0;text-align:left;background:var(--suave);border-radius:16px;padding:12px 14px;color:var(--tinta);font-size:clamp(15px,1.4vw,19px)}
+.step b{font-family:var(--display);font-size:1.25em}
+.step .n{flex:none;width:42px;height:42px;border-radius:50%;background:var(--cielo);color:#fff;display:grid;place-items:center;font-family:var(--display);font-size:22px}
+.step span.d{display:none;margin-top:4px}
+.step.open{background:var(--oro2)} .step.open span.d{display:block}
+/* tarjetas */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(10px,2vw,24px);flex:1;align-items:stretch}
+@media (max-width:900px){.cards{grid-template-columns:1fr 1fr}}
+.card{perspective:900px;border:0;background:none;padding:0;min-height:220px}
+.card .in{position:relative;width:100%;height:100%;min-height:220px;transition:transform .6s;transform-style:preserve-3d}
+.card.flip .in{transform:rotateY(180deg)}
+.card .f,.card .b{position:absolute;inset:0;border-radius:20px;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px;text-align:center}
+.card .f{background:var(--perg);color:var(--tinta);font-family:var(--display);font-size:clamp(20px,2vw,30px);border:4px solid var(--oro)}
+.card .f .ico{font-size:clamp(40px,4vw,64px)}
+.card .b{background:var(--oro2);color:var(--tinta);transform:rotateY(180deg);font-size:clamp(14px,1.3vw,18px);line-height:1.4;font-weight:700}
+/* juego ordenar */
+.order{display:grid;grid-template-columns:1fr 1fr;gap:20px;flex:1}
+@media (max-width:820px){.order{grid-template-columns:1fr}}
+.pool,.done{display:flex;flex-direction:column;gap:8px}
+.pill{border:0;border-radius:14px;padding:11px 16px;font-size:clamp(15px,1.4vw,19px);font-weight:800;background:#fff;color:var(--tinta);text-align:left;transition:transform .15s}
+.pill:hover{transform:scale(1.03)}
+.pill.ok{background:#d6f5df;cursor:default}
+.pill.bad{animation:shake .4s;background:#ffd6d6}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.msg{font-weight:800;font-size:clamp(16px,1.6vw,22px);min-height:1.4em;color:var(--oro2)}
+/* consagración */
+.altar{display:flex;flex-direction:column;align-items:center;gap:12px}
+.bigbtn{border:0;border-radius:999px;padding:14px 28px;background:var(--oro);color:var(--tinta);font-family:var(--display);font-size:clamp(18px,1.8vw,26px);box-shadow:0 6px 0 #b8861d}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 3px 0 #b8861d}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
+.compare div{color:var(--tinta);background:var(--suave);border-radius:14px;padding:10px 12px;font-weight:800;text-align:center;font-size:clamp(14px,1.3vw,18px)}
+.compare em{display:block;font-style:normal;font-family:var(--display);font-size:1.3em;color:var(--cielo)}
+#rays{opacity:0;transition:opacity 1s}
+.consagrado #rays{opacity:1}
+.consagrado .dentro em{color:var(--rojo)}
+/* VF y quiz */
+.vf{display:flex;flex-direction:column;gap:10px}
+.vfrow{display:flex;gap:10px;align-items:center;background:var(--perg);color:var(--tinta);border-radius:14px;padding:10px 14px;font-size:clamp(15px,1.4vw,19px);font-weight:700;flex-wrap:wrap}
+.vfrow span{flex:1;min-width:200px}
+.vfrow button{border:0;border-radius:10px;padding:8px 14px;font-weight:800;font-size:16px}
+.vfrow .v{background:#d6f5df}.vfrow .fx{background:#ffe0e0}
+.vfrow .res{flex-basis:100%;font-weight:400;display:none}
+.vfrow.answered .res{display:block}
+.quiz{max-width:860px;width:100%;align-self:center}
+.qopts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+@media (max-width:600px){.qopts{grid-template-columns:1fr}}
+.qopt{border:3px solid transparent;border-radius:14px;padding:14px;background:var(--suave);font-size:clamp(15px,1.5vw,20px);font-weight:800;text-align:left;color:var(--tinta)}
+.qopt.right{background:#d6f5df;border-color:var(--verde)}
+.qopt.wrong{background:#ffe0e0;border-color:var(--rojo)}
+.qtop{display:flex;justify-content:space-between;font-weight:800;color:var(--cielo)}
+.stars{font-size:clamp(28px,3vw,44px);letter-spacing:4px}
+/* portada / cierre */
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:center;flex:1}
+@media (max-width:820px){.hero{grid-template-columns:1fr}}
+.hero svg,.art svg{width:100%;max-height:62vh;height:auto;display:block}
+.prayer{background:rgba(255,255,255,.12);border:2px dashed var(--oro2);border-radius:18px;padding:16px;font-style:italic}
+/* barra de navegación */
+.nav{position:fixed;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;gap:12px;padding:12px 16px;background:rgba(10,24,48,.75);backdrop-filter:blur(6px);z-index:5}
+.nav button{border:0;border-radius:999px;background:var(--oro);color:var(--tinta);font-weight:800;padding:10px 18px;font-size:16px}
+.nav button:disabled{opacity:.4;cursor:default}
+.dots{display:flex;gap:6px}
+.nav .dot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.35);border:0;padding:0}
+.nav .dot.on{background:var(--oro);transform:scale(1.3)}
+.slide.parte2 .art svg{max-height:34vh}
+.count{color:#fff;font-weight:800;min-width:56px;text-align:center}
+.fs{position:fixed;top:12px;right:12px;z-index:6;border:0;border-radius:999px;background:rgba(255,255,255,.2);color:#fff;padding:8px 14px;font-weight:800}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<!-- Figura de Jesús reutilizable (dibujo original) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="halo" cx=".5" cy=".5" r=".5"><stop offset=".55" stop-color="#ffe08a" stop-opacity=".95"/><stop offset="1" stop-color="#ffe08a" stop-opacity="0"/></radialGradient>
+    <g id="jesus">
+      <circle cx="60" cy="44" r="44" fill="url(#halo)"/>
+      <circle cx="60" cy="44" r="32" fill="none" stroke="#f2b632" stroke-width="3"/>
+      <path d="M34 44 Q28 84 40 96 L80 96 Q92 84 86 44 Z" fill="#6b3e1f"/>
+      <ellipse cx="60" cy="44" rx="26" ry="28" fill="#6b3e1f"/>
+      <rect x="53" y="62" width="14" height="22" fill="#e9b98d"/>
+      <path d="M30 94 Q60 84 90 94 L106 262 L14 262 Z" fill="#fbf7ef" stroke="#e2d6bf" stroke-width="2"/>
+      <path d="M30 94 Q16 170 32 262 L58 262 Q46 176 90 98 Q60 88 30 94 Z" fill="#c0392b"/>
+      <ellipse cx="60" cy="47" rx="18" ry="21" fill="#f1c79e"/>
+      <path d="M41 34 Q60 14 79 34 Q70 27 60 29 Q50 27 41 34 Z" fill="#6b3e1f"/>
+      <path d="M42 52 Q60 84 78 52 Q73 68 60 70 Q47 68 42 52 Z" fill="#6b3e1f"/>
+      <circle cx="53" cy="46" r="2.4" fill="#3b2a1a"/><circle cx="67" cy="46" r="2.4" fill="#3b2a1a"/>
+      <path d="M53 41 q3 -2 6 0 M61 41 q3 -2 6 0" stroke="#6b3e1f" stroke-width="1.6" fill="none"/>
+      <path d="M54 58 Q60 62 66 58" stroke="#8a4a2a" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="48" cy="54" r="3" fill="#f3a7a0" opacity=".6"/><circle cx="72" cy="54" r="3" fill="#f3a7a0" opacity=".6"/>
+      <ellipse cx="44" cy="264" rx="12" ry="5" fill="#a0673a"/><ellipse cx="76" cy="264" rx="12" ry="5" fill="#a0673a"/>
+    </g>
+    <g id="nino">
+      <circle cx="20" cy="18" r="13" fill="#f1c79e"/>
+      <path d="M7 16 Q20 0 33 16 Q26 9 20 10 Q13 9 7 16 Z" fill="#3b2a1a"/>
+      <circle cx="16" cy="18" r="1.6" fill="#2b2340"/><circle cx="24" cy="18" r="1.6" fill="#2b2340"/>
+      <path d="M15 23 Q20 27 25 23" stroke="#8a4a2a" stroke-width="1.6" fill="none"/>
+      <path d="M6 34 Q20 28 34 34 L38 70 L2 70 Z" fill="currentColor"/>
+      <rect x="9" y="70" width="8" height="16" rx="3" fill="#3b4a7a"/><rect x="23" y="70" width="8" height="16" rx="3" fill="#3b4a7a"/>
+    </g>
+  </defs>
+</svg>
+
+<button class="fs" id="fs" type="button">⛶ Pantalla completa</button>
+
+<main class="deck" id="deck">
+
+<!-- 1 PORTADA -->
+<section class="slide on" aria-label="Portada">
+  <span class="tag">Catequesis infantil</span>
+  <div class="hero">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <h1>La Santa Misa y la Eucaristía</h1>
+      <p style="font-size:clamp(18px,2vw,28px)">Jesús, el Buen Pastor, nos invita a su fiesta y se queda con nosotros como Pan de Vida.</p>
+      <p style="opacity:.85">Usa las flechas ← → o los botones de abajo para avanzar.</p>
+    </div>
+    <div class="art">
+      <svg viewBox="0 0 320 320" role="img" aria-label="Jesús Buen Pastor con una oveja en brazos">
+        <rect width="320" height="320" rx="28" fill="#bfe3ff"/>
+        <circle cx="262" cy="56" r="26" fill="#ffd54a"/>
+        <path d="M0 240 Q80 210 160 236 T320 228 V320 H0 Z" fill="#7cc576"/>
+        <path d="M0 268 Q100 248 200 270 T320 262 V320 H0 Z" fill="#5fae5a"/>
+        <g transform="translate(100 34) scale(1)">
+          <use href="#jesus"/>
+          <!-- brazos sosteniendo la oveja -->
+          <path d="M30 100 Q18 150 48 160 L58 148 Q42 138 42 112 Z" fill="#fbf7ef" stroke="#e2d6bf" stroke-width="2"/>
+          <path d="M90 100 Q102 150 72 160 L62 148 Q78 138 78 112 Z" fill="#fbf7ef" stroke="#e2d6bf" stroke-width="2"/>
+          <g fill="#fff" stroke="#d9d2c4" stroke-width="2">
+            <circle cx="46" cy="132" r="13"/><circle cx="60" cy="126" r="14"/><circle cx="74" cy="132" r="13"/><circle cx="54" cy="142" r="13"/><circle cx="68" cy="142" r="13"/>
+          </g>
+          <ellipse cx="86" cy="124" rx="10" ry="8" fill="#5a5560"/><circle cx="89" cy="122" r="1.6" fill="#fff"/>
+          <circle cx="50" cy="156" r="6" fill="#f1c79e"/><circle cx="70" cy="156" r="6" fill="#f1c79e"/>
+        </g>
+        <path d="M222 120 Q240 96 226 84 Q214 78 212 92" stroke="#8b5a2b" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <line x1="222" y1="120" x2="214" y2="300" stroke="#8b5a2b" stroke-width="6" stroke-linecap="round"/>
+        <g fill="#fff" stroke="#d9d2c4" stroke-width="2"><circle cx="50" cy="262" r="12"/><circle cx="64" cy="256" r="13"/><circle cx="76" cy="264" r="12"/></g>
+        <ellipse cx="38" cy="254" rx="8" ry="7" fill="#5a5560"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- 2 QUÉ ES LA MISA -->
+<section class="slide" aria-label="Qué es la Misa">
+  <span class="tag">Parte 1 · La Misa</span>
+  <h2>¿Qué es la Misa?</h2>
+  <div class="grid2">
+    <div>
+      <div class="video" data-yt="cM6_Y6NZoyM" data-start="21"><div class="ph">Cargando video…</div></div>
+      <a class="ylink" href="https://www.youtube.com/watch?v=cM6_Y6NZoyM&t=21s" target="_blank" rel="noopener">▶ Si no se reproduce, ábrelo en YouTube</a>
+    </div>
+    <div class="panel">
+      <p style="margin-bottom:12px"><b>Toca cada palabra</b> y descubre qué es la Misa:</p>
+      <div class="chips">
+        <button class="chip" type="button">🎉 Una fiesta<small>Celebramos que Jesús está vivo y nos ama.</small></button>
+        <button class="chip" type="button">🤝 Un encuentro<small>Jesús nos reúne como su gran familia.</small></button>
+        <button class="chip" type="button">📖 Dios nos habla<small>Escuchamos su Palabra en la Biblia.</small></button>
+        <button class="chip" type="button">🍞 La Última Cena<small>Vivimos lo que Jesús hizo con sus amigos y nos dio su Cuerpo.</small></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 PARTES -->
+<section class="slide" aria-label="Partes de la Misa">
+  <span class="tag">Parte 1 · La Misa</span>
+  <h2>Las 4 partes de la Misa</h2>
+  <div class="grid2">
+    <div>
+      <div class="video" data-yt="1Sp339P-8j4"><div class="ph">Cargando video…</div></div>
+      <a class="ylink" href="https://www.youtube.com/watch?v=1Sp339P-8j4" target="_blank" rel="noopener">▶ Si no se reproduce, ábrelo en YouTube</a>
+    </div>
+    <div class="steps">
+      <button class="step" type="button"><span class="n">1</span><span><b>Ritos iniciales</b><span class="d">Canto de entrada, señal de la cruz, pedimos perdón («Señor, ten piedad») y cantamos el Gloria.</span></span></button>
+      <button class="step" type="button"><span class="n">2</span><span><b>Liturgia de la Palabra</b><span class="d">Escuchamos las lecturas, el Salmo y el Evangelio. El sacerdote nos explica en la homilía.</span></span></button>
+      <button class="step" type="button"><span class="n">3</span><span><b>Liturgia Eucarística</b><span class="d">Ofrendas, consagración, Padre Nuestro, la paz y la Comunión: Jesús se hace alimento.</span></span></button>
+      <button class="step" type="button"><span class="n">4</span><span><b>Ritos de conclusión</b><span class="d">Recibimos la bendición y somos enviados: «Pueden ir en paz».</span></span></button>
+    </div>
+  </div>
+</section>
+
+<!-- 4 TARJETAS -->
+<section class="slide" aria-label="Qué hacemos en cada parte">
+  <span class="tag">Parte 1 · La Misa</span>
+  <h2>¿Qué hacemos en cada parte? ¡Voltea las tarjetas!</h2>
+  <div class="cards">
+    <button class="card" type="button"><div class="in"><div class="f"><span class="ico">✝️</span>Saludar a Dios</div><div class="b">Nos persignamos y pedimos perdón por lo que hicimos mal: «Señor, ten piedad».</div></div></button>
+    <button class="card" type="button"><div class="in"><div class="f"><span class="ico">👂</span>Escuchar</div><div class="b">Nos sentamos para las lecturas y nos ponemos de pie para escuchar el Evangelio, las palabras de Jesús.</div></div></button>
+    <button class="card" type="button"><div class="in"><div class="f"><span class="ico">🍷</span>Compartir la mesa</div><div class="b">El pan y el vino se convierten en Jesús. Rezamos el Padre Nuestro, damos la paz y comulgamos.</div></div></button>
+    <button class="card" type="button"><div class="in"><div class="f"><span class="ico">🕊️</span>¡Vayan en paz!</div><div class="b">Recibimos la bendición y salimos a amar a todos como Jesús, en casa y en el colegio.</div></div></button>
+  </div>
+</section>
+
+<!-- 5 ORDENAR -->
+<section class="slide" aria-label="Juego ordenar">
+  <span class="tag">Juego</span>
+  <h2>Ordena los momentos de la Misa</h2>
+  <p>Toca los momentos <b>en el orden en que pasan</b> en la Misa.</p>
+  <div class="order">
+    <div class="pool" id="pool"></div>
+    <div class="panel"><b>Así va la Misa:</b><ol class="done" id="done" style="margin:10px 0 0;padding-left:22px"></ol></div>
+  </div>
+  <div class="msg" id="orderMsg"></div>
+  <button class="bigbtn" id="orderReset" type="button" style="align-self:flex-start">↺ Jugar otra vez</button>
+</section>
+
+<!-- 6 EUCARISTÍA -->
+<section class="slide parte2" aria-label="Qué es la Eucaristía">
+  <span class="tag">Parte 2 · La Eucaristía</span>
+  <h2>¿Qué es la Eucaristía?</h2>
+  <div class="grid2">
+    <div>
+      <div class="video" data-yt="F-wVs0555Vc"><div class="ph">Cargando video…</div></div>
+      <a class="ylink" href="https://www.youtube.com/watch?v=F-wVs0555Vc" target="_blank" rel="noopener">▶ Si no se reproduce, ábrelo en YouTube</a>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="art">
+        <svg viewBox="0 0 320 230" role="img" aria-label="Jesús en la Última Cena levantando el pan">
+          <rect width="320" height="230" rx="24" fill="#4a2a5e"/>
+          <path d="M40 0 V120 M280 0 V120" stroke="#6d4685" stroke-width="10"/>
+          <circle cx="160" cy="70" r="70" fill="#ffe08a" opacity=".18"/>
+          <g transform="translate(100 6) scale(.78)">
+            <use href="#jesus"/>
+            <path d="M30 100 Q16 140 40 132 L44 120 Q34 122 42 106 Z" fill="#fbf7ef" stroke="#e2d6bf" stroke-width="2"/>
+            <path d="M90 100 Q104 140 80 132 L76 120 Q86 122 78 106 Z" fill="#fbf7ef" stroke="#e2d6bf" stroke-width="2"/>
+            <ellipse cx="60" cy="124" rx="30" ry="12" fill="#e8c27a" stroke="#b8862d" stroke-width="2"/>
+            <path d="M44 120 q8 -6 16 0 q8 -6 16 0" stroke="#b8862d" stroke-width="2" fill="none"/>
+            <circle cx="36" cy="126" r="7" fill="#f1c79e"/><circle cx="84" cy="126" r="7" fill="#f1c79e"/>
+          </g>
+          <rect x="20" y="150" width="280" height="80" fill="#fff8ea"/>
+          <path d="M20 150 H300 V166 Q160 176 20 166 Z" fill="#f2e6cc"/>
+          <path d="M146 152 H174 Q172 176 163 180 V196 H174 V202 H146 V196 H157 V180 Q148 176 146 152 Z" fill="#f2b632" stroke="#a87a1e" stroke-width="2"/>
+          <ellipse cx="90" cy="180" rx="34" ry="10" fill="#e8c27a" stroke="#b8862d" stroke-width="2"/>
+          <g fill="#7b3fa0"><circle cx="232" cy="174" r="7"/><circle cx="246" cy="174" r="7"/><circle cx="239" cy="186" r="7"/><circle cx="253" cy="186" r="7"/><circle cx="246" cy="198" r="7"/></g>
+        </svg>
+      </div>
+      <div class="panel">
+        <p>Es el <b>sacramento</b> en el que <b>Jesús está realmente presente</b>, con su Cuerpo y su Sangre, bajo las apariencias de pan y vino. En la Última Cena dijo: <i>«Esto es mi Cuerpo… esta es mi Sangre»</i>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 TRANSUBSTANCIACIÓN -->
+<section class="slide parte2" aria-label="Transubstanciación">
+  <span class="tag">Parte 2 · El gran milagro</span>
+  <h2>La transubstanciación</h2>
+  <div class="grid2">
+    <div class="panel" style="display:flex;flex-direction:column;gap:12px">
+      <p><b>Trans</b> = cambio · <b>Sustancia</b> = lo que algo <b>es por dentro</b>.</p>
+      <p>En la <b>consagración</b>, cuando el sacerdote dice las palabras de Jesús, por el poder del <b>Espíritu Santo</b> el pan y el vino <b>cambian por dentro</b>: se convierten en el Cuerpo y la Sangre de Jesús.</p>
+      <p>Por fuera se ven, huelen y saben igual. Por dentro ya no son pan ni vino: <b>¡es Jesús vivo!</b> Lo creemos por la fe, porque Jesús lo dijo.</p>
+    </div>
+    <div class="altar" id="altar">
+      <svg viewBox="0 0 300 200" style="width:100%;max-width:440px" role="img" aria-label="Hostia y cáliz sobre el altar">
+        <g id="rays" stroke="#ffd54a" stroke-width="5" stroke-linecap="round">
+          <line x1="100" y1="22" x2="100" y2="2"/><line x1="70" y1="34" x2="56" y2="20"/><line x1="130" y1="34" x2="144" y2="20"/><line x1="56" y1="66" x2="36" y2="62"/><line x1="144" y1="66" x2="164" y2="62"/>
+          <line x1="210" y1="40" x2="210" y2="20"/><line x1="182" y1="52" x2="170" y2="40"/><line x1="238" y1="52" x2="250" y2="40"/>
+        </g>
+        <circle cx="100" cy="72" r="40" fill="#fffdf5" stroke="#e6c27a" stroke-width="4"/>
+        <path d="M95 50 h10 v17 h17 v10 h-17 v17 h-10 v-17 h-17 v-10 h17 z" fill="#ead39c"/>
+        <path d="M178 72 H242 Q240 112 216 118 V150 Q216 156 232 160 V168 H188 V160 Q204 156 204 150 V118 Q180 112 178 72 Z" fill="#f2b632" stroke="#a87a1e" stroke-width="3"/>
+        <ellipse cx="210" cy="72" rx="32" ry="7" fill="#8e1b2a" stroke="#a87a1e" stroke-width="3"/>
+        <rect x="10" y="172" width="280" height="24" rx="6" fill="#fff8ea"/>
+        <rect x="140" y="176" width="20" height="16" fill="#c0392b"/>
+      </svg>
+      <button class="bigbtn" id="consagrar" type="button">✝ Momento de la consagración</button>
+      <div class="compare">
+        <div>Por fuera vemos…<em id="fuera">pan y vino</em></div>
+        <div class="dentro">Por dentro es…<em id="dentro">pan y vino</em></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 VERDADERO O FALSO -->
+<section class="slide parte2" aria-label="Verdadero o falso">
+  <span class="tag">Reto de fe</span>
+  <h2>¿Verdadero o falso?</h2>
+  <div class="vf" id="vf"></div>
+</section>
+
+<!-- 9 CUESTIONARIO -->
+<section class="slide" aria-label="Cuestionario final">
+  <span class="tag">Gran desafío</span>
+  <h2>¿Cuánto aprendiste?</h2>
+  <div class="panel quiz" id="quiz"></div>
+</section>
+
+<!-- 10 CIERRE -->
+<section class="slide" aria-label="Cierre">
+  <span class="tag">¡Gracias!</span>
+  <div class="hero">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <h1>¡Jesús nos espera en cada Misa!</h1>
+      <div class="prayer"><p>«Jesús, creo que estás presente en la Eucaristía. Te amo y quiero recibirte con un corazón limpio. Gracias por quedarte con nosotros. Amén.»</p></div>
+      <p>Nos vemos el domingo en la fiesta de Jesús.</p>
+    </div>
+    <div class="art">
+      <svg viewBox="0 0 320 300" role="img" aria-label="Jesús con los brazos abiertos rodeado de niños">
+        <rect width="320" height="300" rx="28" fill="#ffe9b8"/>
+        <circle cx="160" cy="80" r="90" fill="#fff6d8"/>
+        <path d="M0 250 Q160 225 320 250 V300 H0 Z" fill="#7cc576"/>
+        <g transform="translate(100 10)">
+          <use href="#jesus"/>
+          <path d="M30 98 Q4 128 -4 160 L10 166 Q22 136 42 116 Z" fill="#fbf7ef" stroke="#e2d6bf" stroke-width="2"/>
+          <path d="M90 98 Q116 128 124 160 L110 166 Q98 136 78 116 Z" fill="#fbf7ef" stroke="#e2d6bf" stroke-width="2"/>
+          <circle cx="2" cy="166" r="8" fill="#f1c79e"/><circle cx="118" cy="166" r="8" fill="#f1c79e"/>
+        </g>
+        <g transform="translate(38 168)" style="color:#e86a92"><use href="#nino"/></g>
+        <g transform="translate(70 186) scale(.85)" style="color:#3f9b5a"><use href="#nino"/></g>
+        <g transform="translate(244 168)" style="color:#2f6fbf"><use href="#nino"/></g>
+        <g transform="translate(214 188) scale(.85)" style="color:#f2b632"><use href="#nino"/></g>
+        <g fill="#e86a92"><path d="M290 40 l6 -6 a5 5 0 0 1 7 7 l-13 13 l-13 -13 a5 5 0 0 1 7 -7 z"/></g>
+        <g fill="#c0392b"><path d="M34 52 l5 -5 a4 4 0 0 1 6 6 l-11 11 l-11 -11 a4 4 0 0 1 6 -6 z"/></g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<nav class="nav" aria-label="Navegación">
+  <button id="prev" type="button">← Atrás</button>
+  <div class="dots" id="dots"></div>
+  <span class="count" id="count">1 / 10</span>
+  <button id="next" type="button">Siguiente →</button>
+</nav>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var cur=0, dots=document.getElementById('dots');
+  slides.forEach(function(_,i){var d=document.createElement('button');d.className='dot';d.type='button';d.setAttribute('aria-label','Diapositiva '+(i+1));d.onclick=function(){go(i)};dots.appendChild(d);});
+  function loadVideos(s,on){
+    s.querySelectorAll('.video').forEach(function(v){
+      if(on){
+        if(!v.querySelector('iframe')){
+          var f=document.createElement('iframe');
+          var st=v.dataset.start?('&start='+v.dataset.start):'';
+          f.src='https://www.youtube.com/embed/'+v.dataset.yt+'?rel=0&modestbranding=1'+st;
+          f.title='Video de catequesis';
+          f.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+          f.referrerPolicy='strict-origin-when-cross-origin';
+          f.allowFullscreen=true;
+          v.appendChild(f);
+        }
+      } else {
+        var f2=v.querySelector('iframe'); if(f2) f2.remove();
+      }
+    });
+  }
+  function go(i){
+    if(i<0||i>=slides.length) return;
+    loadVideos(slides[cur],false);
+    slides[cur].classList.remove('on');
+    cur=i;
+    slides[cur].classList.add('on');
+    loadVideos(slides[cur],true);
+    [].forEach.call(dots.children,function(d,j){d.classList.toggle('on',j===cur)});
+    document.getElementById('count').textContent=(cur+1)+' / '+slides.length;
+    document.getElementById('prev').disabled=cur===0;
+    document.getElementById('next').disabled=cur===slides.length-1;
+  }
+  document.getElementById('prev').onclick=function(){go(cur-1)};
+  document.getElementById('next').onclick=function(){go(cur+1)};
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown') go(cur+1);
+    if(e.key==='ArrowLeft'||e.key==='PageUp') go(cur-1);
+  });
+  document.getElementById('fs').onclick=function(){
+    var el=document.documentElement;
+    if(!document.fullscreenElement){ if(el.requestFullscreen) el.requestFullscreen().catch(function(){}); }
+    else if(document.exitFullscreen) document.exitFullscreen();
+  };
+  go(0);
+
+  // chips, pasos y tarjetas
+  document.querySelectorAll('.chip,.step').forEach(function(b){b.onclick=function(){b.classList.toggle('open')}});
+  document.querySelectorAll('.card').forEach(function(b){b.onclick=function(){b.classList.toggle('flip')}});
+
+  // juego ordenar
+  var orden=['Canto de entrada y señal de la cruz','Señor, ten piedad','Gloria','Lecturas y Evangelio','Presentación de las ofrendas','Consagración','Padre Nuestro','Comunión','Bendición final'];
+  var pool=document.getElementById('pool'), done=document.getElementById('done'), msg=document.getElementById('orderMsg'), next=0;
+  function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+  function startOrder(){
+    pool.innerHTML='';done.innerHTML='';msg.textContent='';next=0;
+    shuffle(orden).forEach(function(t){
+      var b=document.createElement('button');b.type='button';b.className='pill';b.textContent=t;
+      b.onclick=function(){
+        if(b.classList.contains('ok')) return;
+        if(t===orden[next]){
+          b.classList.add('ok');b.style.display='none';
+          var li=document.createElement('li');li.textContent=t;li.style.fontWeight='800';li.style.padding='3px 0';done.appendChild(li);
+          next++; msg.textContent=next===orden.length?'🎉 ¡Excelente! Ya conoces el orden de la Misa.':'¡Muy bien! ¿Qué sigue?';
+        } else {
+          b.classList.remove('bad');void b.offsetWidth;b.classList.add('bad');msg.textContent='Casi… piensa qué pasa antes.';
+        }
+      };
+      pool.appendChild(b);
+    });
+  }
+  document.getElementById('orderReset').onclick=startOrder;
+  startOrder();
+
+  // consagración
+  var altar=document.getElementById('altar'), btn=document.getElementById('consagrar');
+  btn.onclick=function(){
+    var on=altar.classList.toggle('consagrado');
+    document.getElementById('fuera').textContent=on?'pan y vino (apariencia)':'pan y vino';
+    document.getElementById('dentro').textContent=on?'¡el Cuerpo y la Sangre de Jesús!':'pan y vino';
+    btn.textContent=on?'↺ Ver antes de la consagración':'✝ Momento de la consagración';
+  };
+
+  // verdadero o falso
+  var vfData=[
+    ['Después de la consagración, la hostia sigue siendo solo pan.',false,'Falso: conserva la apariencia de pan, pero por dentro es Jesús.'],
+    ['Jesús está realmente presente en la Eucaristía.',true,'Verdadero: no es solo un símbolo, es Jesús vivo.'],
+    ['En la consagración el pan y el vino cambian de color y de sabor.',false,'Falso: lo de fuera queda igual; lo que cambia es lo que son por dentro.'],
+    ['El pan y el vino cambian por el poder del Espíritu Santo y las palabras de Jesús.',true,'Verdadero: el sacerdote repite las palabras de Jesús en la Última Cena.'],
+    ['«Eucaristía» significa acción de gracias.',true,'Verdadero: en la Misa damos gracias a Dios.']
+  ];
+  var vf=document.getElementById('vf');
+  vfData.forEach(function(r){
+    var row=document.createElement('div');row.className='vfrow';
+    row.innerHTML='<span></span><button class="v" type="button">✔ Verdadero</button><button class="fx" type="button">✘ Falso</button><div class="res"></div>';
+    row.querySelector('span').textContent=r[0];
+    var res=row.querySelector('.res');
+    function ans(v){row.classList.add('answered');res.textContent=(v===r[1]?'🌟 ¡Correcto! ':'💡 Ups. ')+r[2];row.style.outline='3px solid '+(v===r[1]?'#3f9b5a':'#c0392b');}
+    row.querySelector('.v').onclick=function(){ans(true)};
+    row.querySelector('.fx').onclick=function(){ans(false)};
+    vf.appendChild(row);
+  });
+
+  // cuestionario
+  var Q=[
+    ['¿Qué es la Misa?',['Una clase de historia','La fiesta del encuentro con Jesús','Un concierto','Un paseo'],1],
+    ['¿En qué parte escuchamos el Evangelio?',['Ritos de conclusión','Ritos iniciales','Liturgia de la Palabra','Comunión'],2],
+    ['¿Cuántas partes principales tiene la Misa?',['4','2','7','10'],0],
+    ['¿Cuándo el pan y el vino se convierten en Jesús?',['En el canto de entrada','En la consagración','En la bendición final','En el Gloria'],1],
+    ['Transubstanciación significa que…',['El pan cambia de color','Solo recordamos a Jesús','Cambia lo que el pan y el vino son por dentro','El sacerdote hace magia'],2],
+    ['¿Qué dijo Jesús en la Última Cena?',['«Esto es mi Cuerpo»','«Vamos a jugar»','«Hasta mañana»','«No tengan hambre»'],0]
+  ];
+  var qi=0, score=0, quiz=document.getElementById('quiz');
+  function renderQ(){
+    if(qi>=Q.length){
+      var st='⭐'.repeat(score)+'☆'.repeat(Q.length-score);
+      quiz.innerHTML='<div style="text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center"><h2 style="color:#1f4e8c">¡Terminaste!</h2><div class="stars">'+st+'</div><p><b>'+score+' de '+Q.length+'</b> respuestas correctas. '+(score>=5?'¡Eres un gran amigo de Jesús!':'¡Muy bien! Repasemos juntos.')+'</p><button class="bigbtn" type="button" id="again">↺ Jugar otra vez</button></div>';
+      document.getElementById('again').onclick=function(){qi=0;score=0;renderQ()};
+      return;
+    }
+    var q=Q[qi];
+    quiz.innerHTML='<div class="qtop"><span>Pregunta '+(qi+1)+' de '+Q.length+'</span><span>⭐ '+score+'</span></div><p style="font-size:clamp(20px,2.2vw,30px);font-family:var(--display);margin-top:10px"></p><div class="qopts"></div><div class="msg" style="color:#1f4e8c;margin-top:12px"></div>';
+    quiz.querySelector('p').textContent=q[0];
+    var box=quiz.querySelector('.qopts'), m=quiz.querySelector('.msg'), answered=false;
+    q[1].forEach(function(o,i){
+      var b=document.createElement('button');b.type='button';b.className='qopt';b.textContent=o;
+      b.onclick=function(){
+        if(answered) return; answered=true;
+        if(i===q[2]){b.classList.add('right');score++;m.textContent='🌟 ¡Correcto!';}
+        else {b.classList.add('wrong');box.children[q[2]].classList.add('right');m.textContent='💡 La respuesta correcta está en verde.';}
+        setTimeout(function(){qi++;renderQ()},1600);
+      };
+      box.appendChild(b);
+    });
+  }
+  renderQ();
+})();
+</script>
+</body>
+</html>
